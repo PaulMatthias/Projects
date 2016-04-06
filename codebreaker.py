@@ -1,12 +1,16 @@
 #!/usr/bin/python3
 
-text = 'sg kof swbaoz gqvcsbs uswgvo boasbg robw'
+#text = 'sg kof swbaoz gqvcsbs uswgvo boasbg robw'
+text='aa ab ac ad ae ba bb bc bd be ca cb cc cd ce da db dc dd de ea eb ec ed ee'
+
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+alphabet_25 = 'abcdefghiklmnopqrstuvwxyz'
+alphabet_25_split=[alphabet_25[i:i+1] for i in range(0,len(alphabet_25),1)]
 
 #-----ROT-Verschiebung------------------------------------------------
 
 def rot_verschiebung(text):
     text_split=text.split()
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
     words=len(text_split)
 
@@ -20,4 +24,38 @@ def rot_verschiebung(text):
 
 #--------------------------------------------------------------------
 
+
+#---square chiffre--------------------------------------------
+
+def square_chiffre(text,pw1,pw2):
+
+    print('\n square-chiffre')
+
+    matrix=''
+    decrypt=''
+    text_strip=text.replace(" ","")   #get rid off spaces
+    words=len(text_strip)
+    
+    #Password and text split
+    pw1_split=[pw1[i:i+1] for i in range(0, 5, 1)]
+    pw2_split=[pw2[i:i+1] for i in range(0, 5, 1)]
+    text_split=[text_strip[i:i+2] for i in range(0, len(text_strip), 2)]
+
+    #Matrix aufstellen
+    for i in range(0,len(pw1)):
+        for j in range(0,len(pw2)):
+            matrix+=pw1_split[i] + pw2_split[j]
+    
+    matrix_split=[matrix[i:i+2] for i in range (0,len(matrix), 2)]
+
+    #decrypting
+    for i in range(0,len(text_split)):
+        for j in range(0,len(matrix_split)):
+            if text_split[i]==matrix_split[j]:
+                decrypt+=alphabet_25_split[j]
+    
+    print(decrypt)
+#-------------------------------------------------------------
+
 rot_verschiebung(text)
+square_chiffre(text,'abcde','abcde')
