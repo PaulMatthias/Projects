@@ -6,7 +6,15 @@ text='14241543154225311142441553442443442415445544554551154243132331451543431531
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 alphabet_25 = 'abcdefghiklmnopqrstuvwxyz'
+
+#split abc in pairs
 alphabet_25_split=[alphabet_25[i:i+1] for i in range(0,len(alphabet_25),1)]
+
+keywords_ger=['die','der','das','und','in', 'zu', 'ich', 'hab', 'werd', 'sie', 'von', 'mit']  
+keywords_en=['the','be','to', 'of', 'and', 'in', 'that', 'have', 'it', 'for'] 
+
+#set language for spell checker
+keywords=keywords_ger
 
 #-----ROT-Verschiebung------------------------------------------------
 
@@ -54,8 +62,12 @@ def square_chiffre(text,pw1,pw2):
         for j in range(0,len(matrix_split)):
             if text_split[i]==matrix_split[j]:
                 decrypt+=alphabet_25_split[j]
-    
-    print(decrypt)
+    #check for most common keywords
+    for key in range (0,len(keywords)):
+        if keywords[key] in decrypt:
+            print('match with', keywords[key], ': ', decrypt)
+#        else:
+#            print('no match with ', keywords[key])
 #-------------------------------------------------------------
 
 #TODO add vigeniere chiffre
