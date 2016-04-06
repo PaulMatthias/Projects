@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 #text = 'sg kof swbaoz gqvcsbs uswgvo boasbg robw'
-text='aa ab ac ad ae ba bb bc bd be ca cb cc cd ce da db dc dd de ea eb ec ed ee'
+#text='aa ab ac ad ae ba bb bc bd be ca cb cc cd ce da db dc dd de ea eb ec ed ee'
+text='1424154315422531114244155344244344241544554455455115424313233145154343153133'
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 alphabet_25 = 'abcdefghiklmnopqrstuvwxyz'
@@ -29,7 +30,7 @@ def rot_verschiebung(text):
 
 def square_chiffre(text,pw1,pw2):
 
-    print('\n square-chiffre')
+    print('\n Polybios chiffre (square)')
 
     matrix=''
     decrypt=''
@@ -57,5 +58,9 @@ def square_chiffre(text,pw1,pw2):
     print(decrypt)
 #-------------------------------------------------------------
 
+#TODO add vigeniere chiffre
+#TODO add if clauses to neglect unimportant chiffre (eg rot shift for numbers etc)
+
+
 rot_verschiebung(text)
-square_chiffre(text,'abcde','abcde')
+square_chiffre(text,'12345','12345')
