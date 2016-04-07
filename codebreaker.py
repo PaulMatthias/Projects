@@ -2,7 +2,8 @@
 
 #text = 'sg kof swbaoz gqvcsbs uswgvo boasbg robw'
 #text='aa ab ac ad ae ba bb bc bd be ca cb cc cd ce da db dc dd de ea eb ec ed ee'
-text='1424154315422531114244155344244344241544554455455115424313233145154343153133'
+#text='1424154315422531114244155344244344241544554455455115424313233145154343153133'
+text='twwnp zoaas wnuhz bnwwg snbvc slypm m'  #bsp fuer vigener, pw HOUGHTON
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 alphabet_25 = 'abcdefghiklmnopqrstuvwxyz'
@@ -66,9 +67,28 @@ def square_chiffre(text,pw1,pw2):
     for key in range (0,len(keywords)):
         if keywords[key] in decrypt:
             print('match with', keywords[key], ': ', decrypt)
-#        else:
-#            print('no match with ', keywords[key])
+        else:
+            print('no match with ', keywords[key])
 #-------------------------------------------------------------
+
+#--Vigenere chiffre-------------------------------------------
+
+def vigenere(text,pw):
+    print('\nVigenere cipher\n')
+    decode=''
+    text_strip=text.replace(" ","")   #get rid off spaces
+    pw_split=[pw[i:i+1] for i in range(0, len(pw), 1)]
+    text_split=[text_strip[i:i+1] for i in range(0, len(text), 1)]
+     
+    for letter in range(0,len(text_strip)):
+        i= letter%len(pw)
+        shift=alphabet.index(text_split[letter])- alphabet.index(pw_split[i])
+        if shift < 0:
+            shift+=26
+        decode+=alphabet[shift]
+    print('Decoded with password',pw,':',decode)
+#-------------------------------------------------------------
+
 
 #TODO add vigeniere chiffre
 #TODO add if clauses to neglect unimportant chiffre (eg rot shift for numbers etc)
@@ -76,3 +96,4 @@ def square_chiffre(text,pw1,pw2):
 
 rot_verschiebung(text)
 square_chiffre(text,'12345','12345')
+vigenere(text,'houghton')
