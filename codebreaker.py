@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 #text = 'sg kof swbaoz gqvcsbs uswgvo boasbg robw'   #bsp fuer rot verschiebung
 #text='aa ab ac ad ae ba bb bc bd be ca cb cc cd ce da db dc dd de ea eb ec ed ee' #bsp fuer square (polybius)
 #text='1424154315422531114244155344244344241544554455455115424313233145154343153133' #bsp fuer caesarquadrat
@@ -12,7 +11,7 @@ text='kt tz zk wb xl ow ov kz kd lo po ur n' # BSP fuer playfair
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 alphabet_25 = 'abcdefghiklmnopqrstuvwxyz'
 
-#split abc in pairs
+#split abc 
 alphabet_25_split=[alphabet_25[i:i+1] for i in range(0,len(alphabet_25),1)]
 
 keywords_ger=['die','der','das','und','in', 'zu', 'ich', 'hab', 'werd', 'sie', 'von', 'mit']  
