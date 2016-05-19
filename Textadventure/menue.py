@@ -80,7 +80,7 @@ def start():
     print('Ziehe los und stuerze den arbeitslosen Riesenzwerg!\n')
     print('Dein Abentuer beginnt in einer Gefaengniszelle unter dem Schloss Knarfs.\n')
     print('\n')
-    print('Dies ist dein Geschichte!\n')
+    print('Dies ist deine Geschichte!\n')
     print('\n')
     while True:
         get_input()
@@ -89,15 +89,16 @@ def stop():
     exit()
 
 def helpme():
-    print('\n')
-    print("Die wichigsten Befehle:\n")
-    print("'sag #Eingabe': sage irgendetwas\n")
-    print("'gehe nord/ost/sued/west': bewege dich auf der Karte\n")
-    print("'oeffne #Eingabe': oeffnet Gegenstaende\n")
-    print("'schlage #Eingabe': Kampf mit Gegner\n")
-    print("'untersuche #Eingabe': untersucht Gegenstand oder Person\n")
-    print("'position': Gibt deine aktuelle Position in Form von Koordinaten wieder\n")
-    print("'exit': Verlaesst das Spiel")
+    msg='\n'
+    msg+="Die wichigsten Befehle:\n"
+    msg+="'sag #Eingabe': sage irgendetwas\n"
+    msg+="'gehe nord/ost/sued/west': bewege dich auf der Karte\n"
+    msg+="'oeffne #Eingabe': oeffnet Gegenstaende\n"
+    msg+="'schlage #Eingabe': Kampf mit Gegner\n"
+    msg+="'untersuche #Eingabe': untersucht Gegenstand oder Person\n"
+    msg+="'position': Gibt deine aktuelle Position in Form von Koordinaten wieder\n"
+    msg+="'exit': Verlaesst das Spiel"
+    return msg
 
 start_dict={
         "Start":start,

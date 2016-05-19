@@ -2,17 +2,21 @@
 
 #---------------- Setting of Classes ----------------------------------------------------------
 class GameObject:
+    name=""
     class_name=""
     description=""
     objects={}
     location=[]
     status=""
+    status2=""
+    status3=""
     content=""
     items=[]
 
     def __init__(self,name):
         self.name=name
-        GameObject.objects[self.class_name]=self              
+        GameObject.objects[self.class_name]=self             
+        print(GameObject.objects)
 
     def get_description(self):
         return self.class_name + "\n" + self.description
@@ -25,11 +29,11 @@ class GameObject:
 
 
 class Goblin(GameObject):
-    def __init__(self,name):
-        self.class_name = "goblin"
+    def __init__(self,name,x,y):
+        self.class_name = name
         self.description= "Eine grausame Kreatur"
         self.health=3
-        #self.location=[]
+        self.location=[x,y]
         super().__init__("goblin")
 
     @property 
@@ -49,12 +53,12 @@ class Goblin(GameObject):
         self._description = value
 
 class Player(GameObject):
-    def __init__(self,name):
-        self.class_name = "spieler"
+    def __init__(self,name,x,y):
+        self.class_name = name
         self.description= "Das bist du"
         self.health=10
         self.items=[]
-        #self.location=[2,1]
+        self.location=[x,y]
         super().__init__("spieler")
 
     @property 
@@ -74,11 +78,11 @@ class Player(GameObject):
         self._description = value
 
 class Wizard(GameObject):
-    def __init__(self,name):
-        self.class_name = "zauberer"
+    def __init__(self,name,x,y):
+        self.class_name = name
         self.description= "Ein grauer weiser Zauberer."
         self.health=2
-        #self.location=[1,2]
+        self.location=[x,y]
         super().__init__("zauberer")
 
     @property 
@@ -100,17 +104,23 @@ class Wizard(GameObject):
         self._description = value
 
 class Door(GameObject):
-    def __init__(self,name):
-        self.class_name = "tuer"
+    def __init__(self,name,locked,key,x,y):
+        self.name=name
+        self.class_name = name
         self.description="Eine schwere hoelzerne Tuer mit Eisenriegel"
-        #self.location=[2,3]
+        self.location=[x,y]
         self.status="closed"
-        super().__init__("tuer")
+        self.status2=locked
+        self.status3=key
+        super().__init__(name)
 
     @property
     def description(self):
         if self.status=="closed":
-            msg="Sie ist geschlossen"
+            if self.status2=="locked":
+                msg="Sie ist abgeschlossen"
+            else:
+                msg="Sie ist geschlossen"
         elif self.status=="opened":
             msg="Sie ist offen"
         return self._description + "\n" + msg    
@@ -120,12 +130,12 @@ class Door(GameObject):
         self._description=value
 
 class Chest(GameObject):
-    def __init__(self,name):
-        self.class_name = "truhe"
+    def __init__(self,name,content,x,y):
+        self.class_name = name
         self.description="Eine alte Truhe"
-        #self.location=[4,4]
+        self.location=[x,y]
         self.status="closed"
-        #self.content="dynamit"
+        self.content=content
         super().__init__("truhe")
 
     @property

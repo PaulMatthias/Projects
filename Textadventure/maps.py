@@ -17,9 +17,9 @@ class Map:
         return self.map_content[0][location[0],location[1]]
 
 class Intro(Map):
-    def __init__(self,name):
-        self.map_name="intro"
-        self.map_size=[5,5]
+    def __init__(self,name,x,y):
+        self.map_name=name
+        self.map_size=[x,y]
         super().__init__("intro")
     
     def fill_map_content(self):
@@ -44,10 +44,11 @@ class Intro(Map):
 
 class Verlies(Map):
 
-    def __init__(self,name):
-        self.map_name="verlies"
-        self.map_size=[5,7]
+    def __init__(self,name,x,y):
+        self.map_name=name
+        self.map_size=[x,y]
         super().__init__("verlies")
+
     
     def fill_map_content(self):
         #set corridors
@@ -74,13 +75,13 @@ class Verlies(Map):
         #set exit to other levels
         self.map_content_init[2,7]="world"
         
-        for i in range (0,6):
-            for j in range (0,8):
-                print(i,j,self.map_content_init[i,j])
+       # for i in range (0,6):
+       #     for j in range (0,8):
+       #         print(i,j,self.map_content_init[i,j])
         return self.map_content_init
 
     def set_map_content(self):
-        self.map_content_init=self.fill_map_content(self)
+        self.map_content_init=self.fill_map_content()
         self.map_content=self.map_content_init
 
         return self.map_content_init, self.map_content
