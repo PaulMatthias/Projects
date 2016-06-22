@@ -7,13 +7,14 @@ using namespace std;
 class product{  
   public:
    
-    product(const string nm, int prod_stat, string stat, string wb):name(nm),prod_status(prod_stat),status(stat),worked_by(wb){
-    }
+    product(const string nm, int prod_stat, string stat, string wb, string wbn):name(nm),prod_status(prod_stat),status(stat),worked_by(wb), worked_by_next(wbn){
+   }
 
     string name;
     unsigned int prod_status;
     string status;
     string worked_by;
+    string worked_by_next;
 
     string get_name(){
       return name;

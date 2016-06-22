@@ -13,8 +13,6 @@ int main(){
 
     std::vector<product> list_of_products = init_products();
     std::vector<worker> list_of_workers = init_workers();
-    std::vector<int> worker_times;
-    worker_times.resize(list_of_workers.size());
     //cout<<list_of_products.size()<<endl;
     //cout<<list_of_workers.size()<<endl;
     unsigned int number_of_products=list_of_products.size();
@@ -22,10 +20,6 @@ int main(){
     string current_status;
     unsigned int current_prod_status;
 
-    //create array with initial times of cells for resetting 
-    for (int i=0; i<worker_times.size(); i++){
-      worker_times[i]=list_of_workers[i].minute;
-    }
 
 
     cout<<"beginning main loop"<<endl;
@@ -64,7 +58,7 @@ int main(){
        }
        if (list_of_workers[j].minute==0){
 	list_of_workers[j].status="free";
-	list_of_workers[j].minute=worker_times[j];
+	list_of_workers[j].minute=10;
         for (int i=0;i<number_of_products;i++){
 	  if (list_of_products[i].worked_by==list_of_workers[j].name){
 	    list_of_products[i].prod_status+=1;

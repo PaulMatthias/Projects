@@ -6,11 +6,12 @@ using namespace std;
 
 class worker{
   public:
-    worker(string nm, string stat, int sk, int ti):name(nm),status(stat),skill(sk),minute(ti){
+    worker(string nm, string stat, int sk, int ti, string wn):name(nm),status(stat),skill(sk),minute(ti), work_next(wn){
     }
 
     string name;
     string status;
+    string work_next;
     unsigned int skill;
     unsigned int minute;
 
