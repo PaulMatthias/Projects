@@ -6,15 +6,20 @@ using namespace std;
 
 class worker{
   public:
-    worker(string nm, string stat, int sk, int ti, string wn):name(nm),status(stat),skill(sk),minute(ti), work_next(wn){
+    worker(string nm, string stat, int sk1, int sk2, int ti1, int ti2, double eff, string wn):name(nm),status(stat),skill1(sk1),skill2(sk2),minute1(ti1), minute2(ti2), work_next(wn){
     }
 
     string name;
     string status;
     string work_next;
-    unsigned int skill;
-    unsigned int minute;
+    unsigned int skill1;
+    unsigned int skill2;
+    unsigned int minute1;
+    unsigned int minute2;
+    double efficiency;
 
+
+    //TODO remove all these functions
     string get_name(){
       return name;
     }
@@ -32,15 +37,15 @@ class worker{
     }
 
     unsigned int get_skill(){
-      return skill;
+      return skill1;
     }
 
     void set_skill(int sk){
-      skill=sk;
+      skill1=sk;
     }
     
     unsigned int get_minute(){
-      return minute;
+      return minute1;
     }
 
 };

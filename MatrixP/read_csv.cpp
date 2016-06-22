@@ -8,18 +8,18 @@
 using namespace std;
 
 //std::vector<string> main() {
-int main() {
-    ifstream in;
+void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<string>& ap2,\
+	      std::vector<string>& minute1, std::vector<string>& minute2, std::vector<string>& efficiency) {
+
+  ifstream in;
     in.open("test.csv");
     assert(in.is_open());
-    std::vector<string> names;
-    std::vector<string> ap1;
-    std::vector<string> ap2;
-    std::vector<string> efficiency;
+
     std::vector<string> separ;
     const int MAXSIZE =100; //TODO figure out how big this size has to be
     char thisVal[MAXSIZE];
     int i=0;
+
     while(in.getline(thisVal,MAXSIZE)){
 	string str(thisVal);
 	separ=separate(thisVal);
@@ -27,15 +27,18 @@ int main() {
 	ap1.push_back(separ[1]);
 	ap2.push_back(separ[2]);
 	efficiency.push_back(separ[3]);
+	minute1.push_back(separ[4]);
+	minute2.push_back(separ[5]);
 	i++;
     }
-    // in.getline(thisVal,MAXSIZE,'\n')) {
 
     in.close();
+
+#if 0
     for (string cp: names) cout<<cp<<endl;
     for (string cp: ap1) cout<<cp<<endl;
     for (string cp: ap2) cout<<cp<<endl;
     for (string cp: efficiency) cout<<cp<<endl;
-    //return values;
-    return 0;
+    //print resulting vectors
+#endif
 }
