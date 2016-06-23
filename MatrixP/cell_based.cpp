@@ -1,36 +1,46 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "init.cpp"
+#include "output.cpp"
 //#include "init_worker.cpp"
 #include "init_worker_from_file.cpp"
 
 using namespace std;
 
+      //TODO add example for lineproduction
+      
 int main(){
 
     unsigned int t, tmax;
 
-    tmax=20;
+    tmax=10000;
 
     std::vector<product> list_of_products = init_products();
     std::vector<worker> list_of_workers = init_workers_from_file();
     std::vector<int> worker_times;
+    //std::vector<int> worker_times2;
     worker_times.resize(list_of_workers.size());
 
     //cout<<list_of_products.size()<<endl;
     //cout<<list_of_workers.size()<<endl;
-    unsigned int number_of_products=list_of_products.size();
-    unsigned int number_of_workers=list_of_workers.size();
     string current_status;
     unsigned int current_prod_status;
 
 
     unsigned int max_minute = 10;
+    unsigned int max_prod_status = 3;
+    unsigned int products_finished = 0;
+    unsigned int time_of_rest = 0;
+
+    std::vector<int> out_time;
+    std::vector<int> out_prod;
 
 
     //create array with initial times of cells for resetting 
     for (int i=0; i<worker_times.size(); i++){
-      worker_times[i]=list_of_workers[i].minute1;
+      worker_times[i]=(int) list_of_workers[i].minute1*list_of_workers[i].efficiency;
+      //worker_times2[i]=list_of_workers[i].minute2*list_of_workers[i].efficiency;
     }
 
 /**************************************************************************************************
@@ -42,9 +52,17 @@ int main(){
     cout<<"beginning main loop"<<endl;
     for (t=0;t<=tmax;++t){
 
+
+      cout<<"t"<<t<<endl;
+
+      //look for free worker with ap1 =1 to start on a new product
+      for (int i=0;i<list_of_workers.size();i++){
+	if (list_of_workers[i].skill1==1 && list_of_workers[i].status=="free"){
+	  init_product(list_of_products, list_of_workers[i]);
+	}
+      }
 	
 
-	cout<<"t"<<t<<endl;
       //Loop cells to look for free cells and send waiting or looking products to them
       for (int i=0;i<list_of_workers.size();i++){
 	if(list_of_workers[i].status=="free"){
@@ -93,7 +111,7 @@ int main(){
       
          
       //Loop that reduces the minutes still needed of occupied workers and setting free ready workers and products
-     for (int j=0;j<number_of_workers;j++){
+     for (int j=0;j<list_of_workers.size();j++){
        if (list_of_workers[j].status=="occupied"){
 	 list_of_workers[j].minute1-=1;
         // cout<<list_of_workers[j].name<< " is "<< list_of_workers[j].status<<endl;
@@ -101,7 +119,8 @@ int main(){
        if (list_of_workers[j].minute1==0){
 	list_of_workers[j].status="free";
 	list_of_workers[j].minute1=worker_times[j];
-        for (int i=0;i<number_of_products;i++){
+
+        for (int i=0;i<list_of_products.size();i++){
 	  if (list_of_products[i].worked_by==list_of_workers[j].name){
 	    //list_of_products[i].prod_status+=1;
 	    if(list_of_products[i].worked_by_next=="noone"){
@@ -110,25 +129,51 @@ int main(){
 	      list_of_products[i].status="waiting";
 	    }
 	    list_of_products[i].worked_by="noone";
+	    if (list_of_products[i].prod_status==max_prod_status){
+	      products_finished++; //count the numbers of finshed products
+	    }
 	  }
 	 }
 	}
       }
-#if 1
-    for (int i=0;i<number_of_products;i++){
+
+
+
+
+#if 0 //This is debug output which shows every occupied worker and engaged product
+    for (int i=0;i<list_of_products.size();i++){
       if (list_of_products[i].worked_by_next!="noone"){
       cout<<list_of_products[i].name<<" is "<< list_of_products[i].status<<" in minute "<< t << " worked by "<< list_of_products[i].worked_by <<" "<<"worked on next by "<<list_of_products[i].worked_by_next<<endl;
       cout<<"Current prod status: "<<list_of_products[i].prod_status<<endl;
       }
     }
-#endif
-    for (int i=0;i<number_of_workers;i++){
+    for (int i=0;i<list_of_workers.size();i++){
       if(list_of_workers[i].status=="occupied" || list_of_workers[i].work_next!="nothing" ){
       cout<<list_of_workers[i].name<<" is "<< list_of_workers[i].status <<" in minute "<< t << " and still needs "<<list_of_workers[i].minute1 <<" working next on "<<list_of_workers[i].work_next<<endl;
       }
     }
+#endif
+    
+
+  //TODO this is still a pretty naive approach for meassuring the time of non productivity of the cells
+  //keep in mind that we start from scratch still, so th time of non productivity may rise till the system is filled
+    for (int j=0;j<list_of_workers.size();j++){
+      if(list_of_workers[j].status=="free"){
+	time_of_rest++;
+      }
+    }
+
+    //Creating output arrays
+    out_time.push_back(time_of_rest);
+    out_prod.push_back(products_finished);
+
 
   }//tmax
+    
+
+  output(out_time, out_prod);
+
+  cout<<"After timestep t="<<t<<" are "<<products_finished<<" products finished"<<endl;
     
   return 0;
 }

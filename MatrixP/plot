@@ -1,0 +1,26 @@
+reset
+
+#set size 1,1
+#set multiplot layout 2,1
+
+#set xrange [0:1000]
+
+#set size 1,0.3
+#set origin 600,0
+#set title 'rest time'
+#set ylabel 'rest time'
+#plot 'rest_time.dat' title ''
+
+#set size 1,0.3
+#set origin 300,0
+#set title 'products'
+#set ylabel 'finished products'
+#plot 'products.dat' title ''
+
+set size 1,1
+set origin 0,0
+set title 'rest time per product'
+set xlabel 'time t'
+set ylabel 'rt/p'
+plot 'rt_per_prod.dat' title ''
+

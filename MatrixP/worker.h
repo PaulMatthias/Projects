@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -6,7 +8,7 @@ using namespace std;
 
 class worker{
   public:
-    worker(string nm, string stat, int sk1, int sk2, int ti1, int ti2, double eff, string wn):name(nm),status(stat),skill1(sk1),skill2(sk2),minute1(ti1), minute2(ti2), work_next(wn){
+    worker(string nm, string stat, int sk1, int sk2, int ti1, int ti2, double eff, string wn):name(nm),status(stat),skill1(sk1),skill2(sk2),minute1(ti1), minute2(ti2), efficiency(eff), work_next(wn){
     }
 
     string name;

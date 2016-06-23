@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "product.h"
+#include "worker.h"
 
 using namespace std;
 
@@ -18,4 +19,16 @@ product product3("Stapler3", 0, "looking", "noone","noone");
     prodVec.push_back(product3);
 
 return prodVec;
+}
+
+
+//INITializes one new product
+void init_product(std::vector<product>& list_of_products, worker& worker) {
+
+    int prod_count = list_of_products.size();
+    product prod("Stapler"+to_string(prod_count), 1, "engaged", worker.name, "noone");
+    list_of_products.push_back(prod);
+    worker.status="occupied";
+    worker.work_next="nothing";
+
 }

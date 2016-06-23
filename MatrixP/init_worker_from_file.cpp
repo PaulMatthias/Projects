@@ -9,6 +9,7 @@ using namespace std;
 std::vector<worker> init_workers_from_file() {
 
 std::vector<worker> workVec;
+//TODO put vectors in a matrix
 std::vector<string> names;
 std::vector<string> ap1;
 std::vector<string> ap2;
