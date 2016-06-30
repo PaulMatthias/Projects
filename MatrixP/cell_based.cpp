@@ -12,9 +12,10 @@ using namespace std;
       
 int main(){
 
-    unsigned int t, tmax;
+    unsigned int t, tmax, out_start;
 
-    tmax=10000;
+    tmax=200;
+    out_start=100;
 
     std::vector<product> list_of_products = init_products();
     std::vector<worker> list_of_workers = init_workers_from_file();
@@ -167,11 +168,33 @@ int main(){
     out_time.push_back(time_of_rest);
     out_prod.push_back(products_finished);
 
+    if(t>=out_start){
+      std::vector<vector<int>> out_run;
+      //give status an int value
+      for(int cell=0; cell<list_of_workers.size(); cell++){
+	std::vector<int> row;
+	int status;
+	if(list_of_workers[cell].status=="occupied") {
+	  status=0;
+	} else if(list_of_workers[cell].status=="waiting") {
+	  status=1;
+	} else if(list_of_workers[cell].status=="free"){
+	  status=2;
+	} else {
+	  cout<<"UNrecognized cell status"<<endl;
+	}
+	row.push_back(t);
+	row.push_back(cell);
+	row.push_back(status);
+	out_run.push_back(row);
+      }
+      output_run(out_run, list_of_workers.size(), t);
+    }
 
   }//tmax
     
 
-  output(out_time, out_prod);
+  output(out_time, out_prod, list_of_workers);
 
   cout<<"After timestep t="<<t<<" are "<<products_finished<<" products finished"<<endl;
     
