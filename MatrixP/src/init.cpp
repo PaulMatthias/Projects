@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "product.h"
-#include "worker.h"
+#include "../h/product.h"
+#include "../h/worker.h"
 
 using namespace std;
 

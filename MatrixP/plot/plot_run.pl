@@ -28,6 +28,6 @@ set grid
 
 do for[i=100:200] {
 set title 'timestep '.i
-plot 'out/run'.i.'.dat' matrix with image title '' ,\
-'ap_of_cell.dat' using 1:2:(sprintf('%s',stringcolumn(3))) with labels font ',2' title ''
+plot '../out/run'.i.'.dat' matrix with image title '' ,\
+'../out/ap_of_cell.dat' using 1:2:(sprintf('%s',stringcolumn(3))) with labels font ',2' title ''
 }

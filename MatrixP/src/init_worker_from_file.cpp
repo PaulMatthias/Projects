@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "worker.h"
+#include "../h/worker.h"
 #include "read_csv.cpp"
 
 using namespace std;

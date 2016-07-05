@@ -15,12 +15,12 @@ reset
 #set origin 300,0
 #set title 'products'
 #set ylabel 'finished products'
-#plot 'products.dat' title ''
+#plot '../out/products.dat' title ''
 
 set size 1,1
 set origin 0,0
 set title 'rest time per product'
 set xlabel 'time t'
 set ylabel 'rt/p'
-plot 'rt_per_prod.dat' title ''
+plot '../out/rt_per_prod.dat' title ''
 

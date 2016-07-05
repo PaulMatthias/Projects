@@ -12,7 +12,7 @@ void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<s
 	      std::vector<string>& minute1, std::vector<string>& minute2, std::vector<string>& efficiency) {
 
   ifstream in;
-    in.open("test.csv");
+    in.open("input.csv");
     assert(in.is_open());
 
     std::vector<string> separ;
