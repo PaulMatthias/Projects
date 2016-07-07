@@ -7,16 +7,27 @@
 
 using namespace std;
 
+////////////////////////////////////////////////////////////////////////////
+//EXPLANATION FOR INPUT FILE FORMAT csv (comma separated value)/////////////
+////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************/
+//  Zellenname | Arbeitspaket 1 | Arbeitspaket 2 | Effizienz (1=100%) | Zeit benoetigt fuer AP1 | Zeit benoetigt fuer AP2 //
+/*******************************************************************************/
+
+
+
+
+
 //std::vector<string> main() {
 void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<string>& ap2,\
 	      std::vector<string>& minute1, std::vector<string>& minute2, std::vector<string>& efficiency) {
 
   ifstream in;
-    in.open("input.csv");
+    in.open("../input.csv");
     assert(in.is_open());
 
     std::vector<string> separ;
-    const int MAXSIZE =100; //TODO figure out how big this size has to be
+    const int MAXSIZE =100; //this number controls the maximum number of signs are read per row, if input get bigger resize it
     char thisVal[MAXSIZE];
     int i=0;
 

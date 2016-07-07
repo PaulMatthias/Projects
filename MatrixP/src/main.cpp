@@ -14,20 +14,18 @@ int main(){
 
     unsigned int t, tmax, out_start;
 
-    tmax=200;
+    tmax=100;
     out_start=100;
 
     std::vector<product> list_of_products = init_products();
     std::vector<worker> list_of_workers = init_workers_from_file();
     std::vector<int> worker_times;
-    //std::vector<int> worker_times2;
+    std::vector<int> worker_times2;
     worker_times.resize(list_of_workers.size());
+    worker_times2.resize(list_of_workers.size());
 
-    //cout<<list_of_products.size()<<endl;
-    //cout<<list_of_workers.size()<<endl;
     string current_status;
     unsigned int current_prod_status;
-
 
     unsigned int max_minute = 10;
     unsigned int max_prod_status = 3;
@@ -38,10 +36,10 @@ int main(){
     std::vector<int> out_prod;
 
 
-    //create array with initial times of cells for resetting 
+    //create array with initial times of cells for resetting after they finished one working package (ap1 or ap2)
     for (int i=0; i<worker_times.size(); i++){
-      worker_times[i]=(int) list_of_workers[i].minute1*list_of_workers[i].efficiency;
-      //worker_times2[i]=list_of_workers[i].minute2*list_of_workers[i].efficiency;
+      worker_times[i] =(int) list_of_workers[i].minute1*list_of_workers[i].efficiency;
+      worker_times2[i]=(int) list_of_workers[i].minute2*list_of_workers[i].efficiency;
     }
 
 /**************************************************************************************************
@@ -50,15 +48,14 @@ int main(){
  * 
  * *********************************************************************************************/
 
-    cout<<"beginning main loop"<<endl;
+    cout<<"Beginning Main Loop"<<endl;
     for (t=0;t<=tmax;++t){
 
+     if(t%50==0) cout<<"t"<<t<<endl;
 
-      cout<<"t"<<t<<endl;
-
-      //look for free worker with ap1 =1 to start on a new product
+      //look for free worker with ap1 or ap2  =1 to start on a new product
       for (int i=0;i<list_of_workers.size();i++){
-	if (list_of_workers[i].skill1==1 && list_of_workers[i].status=="free"){
+	if ((list_of_workers[i].skill1==1 || list_of_workers[i].skill2==1) && list_of_workers[i].status=="free"){
 	  init_product(list_of_products, list_of_workers[i]);
 	}
       }
@@ -67,17 +64,22 @@ int main(){
       //Loop cells to look for free cells and send waiting or looking products to them
       for (int i=0;i<list_of_workers.size();i++){
 	if(list_of_workers[i].status=="free"){
-	  //cout<<list_of_products[i].name<< " has to find worker with skill "<< current_prod_status+1 <<endl;
 	  for (int j=0;j<list_of_products.size();j++){
+	  //cout<<list_of_products[j].name<< " has to find worker with skill "<< list_of_products[j].prod_status <<endl;
 	    if (((list_of_products[j].worked_by_next==list_of_workers[i].name && list_of_products[j].status=="waiting" ) ||\
-		(list_of_products[j].prod_status+1==list_of_workers[i].skill1 && list_of_products[j].status=="looking" )) && \
-	       	list_of_workers[i].status=="free"){
+		((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && list_of_products[j].status=="looking" )) && \
+	    list_of_workers[i].status=="free"){
 	      list_of_workers[i].status="occupied";
 	      list_of_workers[i].work_next="nothing";
 	      list_of_products[j].status="engaged";
 	      list_of_products[j].worked_by=list_of_workers[i].name;
 	      list_of_products[j].worked_by_next="noone";
 	      list_of_products[j].prod_status+=1;
+	      if(list_of_products[j].prod_status==list_of_workers[i].skill1){
+		list_of_workers[i].current_skill_used=1;
+	      }else if(list_of_products[j].prod_status==list_of_workers[i].skill2){
+		list_of_workers[i].current_skill_used=2;
+	      }
 	    }// if status + skill1
 	  }//for products
 	} 
@@ -90,7 +92,7 @@ int main(){
 	    int j=0;
 	    int looking=1;
 	    do{
-	      if(list_of_products[j].prod_status+1==list_of_workers[i].skill1 && \
+	      if((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && \
 		 list_of_products[j].worked_by_next=="noone" && \
 		 list_of_products[j].worked_by!=list_of_workers[i].name && \
 		 //list_of_products[j].status=="engaged" && 
@@ -114,12 +116,18 @@ int main(){
       //Loop that reduces the minutes still needed of occupied workers and setting free ready workers and products
      for (int j=0;j<list_of_workers.size();j++){
        if (list_of_workers[j].status=="occupied"){
-	 list_of_workers[j].minute1-=1;
-        // cout<<list_of_workers[j].name<< " is "<< list_of_workers[j].status<<endl;
+	 if(list_of_workers[j].current_skill_used==1){
+	  list_of_workers[j].minute1-=1;
+	 }else if(list_of_workers[j].current_skill_used==2){
+	  list_of_workers[j].minute2-=1;
+	 }
+         //cout<<list_of_workers[j].name<< " is "<< list_of_workers[j].status<<endl;
        }
-       if (list_of_workers[j].minute1==0){
+       if ((list_of_workers[j].minute1==0 && list_of_workers[j].skill1!=0) || (list_of_workers[j].minute2==0 && list_of_workers[j].skill2)) {
 	list_of_workers[j].status="free";
+	list_of_workers[j].current_skill_used=0;
 	list_of_workers[j].minute1=worker_times[j];
+	list_of_workers[j].minute2=worker_times2[j];
 
         for (int i=0;i<list_of_products.size();i++){
 	  if (list_of_products[i].worked_by==list_of_workers[j].name){

@@ -30,5 +30,6 @@ void init_product(std::vector<product>& list_of_products, worker& worker) {
     list_of_products.push_back(prod);
     worker.status="occupied";
     worker.work_next="nothing";
+    worker.current_skill_used=1;
 
 }

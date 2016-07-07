@@ -8,7 +8,7 @@ using namespace std;
 
 class worker{
   public:
-    worker(string nm, string stat, int sk1, int sk2, int ti1, int ti2, double eff, string wn):name(nm),status(stat),skill1(sk1),skill2(sk2),minute1(ti1), minute2(ti2), efficiency(eff), work_next(wn){
+    worker(string nm, string stat, int sk1, int sk2, int ti1, int ti2, double eff, string wn, int csu):name(nm),status(stat),skill1(sk1),skill2(sk2),minute1(ti1), minute2(ti2), efficiency(eff), work_next(wn), current_skill_used(csu){
     }
 
     string name;
@@ -19,6 +19,7 @@ class worker{
     unsigned int minute1;
     unsigned int minute2;
     double efficiency;
+    int current_skill_used;
 
 
     //TODO remove all these functions
