@@ -16,12 +16,12 @@ class worker{
 
     string name;
     string status;
-    string work_next;
     unsigned int skill1;
     unsigned int skill2;
     unsigned int minute1;
     unsigned int minute2;
     double efficiency;
+    string work_next;
     int current_skill_used;
 
 

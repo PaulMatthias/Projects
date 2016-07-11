@@ -20,7 +20,7 @@ void init_workers_from_file(std::vector<worker>& workVec) {
   // init worker (Name, status, skillset, time for skillset)  
   read_csv(names, ap1, ap2, minute1, minute2, efficiency);
 
-  for (int i=0; i<names.size(); i++){
+  for (unsigned int i=0; i<names.size(); i++){
     worker workers(names[i], "free", stoi(ap1[i]), stoi(ap2[i]), stoi(minute1[i]), stoi(minute2[i]), stod(efficiency[i]), "nothing", 0);
     workVec.push_back(workers);
   }

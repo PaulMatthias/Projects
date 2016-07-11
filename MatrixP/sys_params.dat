@@ -1,1 +1,4 @@
 t_max		200
+max_minute	10
+max_prod_status 3
+out_start	100

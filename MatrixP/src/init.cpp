@@ -36,7 +36,7 @@ void init_product(std::vector<product>& list_of_products, worker& worker) {
 }
 
 
-void init_sys_params(std::string dat, int& t_max){
+void init_sys_params(std::string dat, unsigned int& t_max, unsigned int& max_minute, unsigned int& max_prod_status, unsigned int& out_start){
 
   std::map<string, double> name_to_value;
 
@@ -69,6 +69,10 @@ void init_sys_params(std::string dat, int& t_max){
     cout<<"Warning, "<<#x<<" was not found in input.dat. its default value is "<<x<<endl;\
   }
 
+
+  //List here all values which have to be initialized per file
   find(t_max);
-    cout<<t_max<<endl;
+  find(max_minute);
+  find(max_prod_status);
+  find(out_start);
 }

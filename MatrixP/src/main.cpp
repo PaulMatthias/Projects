@@ -16,10 +16,13 @@ using namespace std;
       
 int main(){
 
-    unsigned int t, tmax, out_start;
-    int t_max;
+    unsigned int t, out_start;
 
-    tmax=100;
+
+    unsigned int tmax=100;  //default value
+    unsigned int max_minute = 10;
+    unsigned int max_prod_status = 3;
+    unsigned int products_finished = 0;
     out_start=100;
 
     std::vector<product> list_of_products; 
@@ -33,21 +36,16 @@ int main(){
     worker_times2.resize(list_of_workers.size());
 
     string current_status;
-    unsigned int current_prod_status;
 
-    init_sys_params("sys_params.dat", t_max);
+    init_sys_params("sys_params.dat", tmax, max_minute, max_prod_status, out_start);
 
-    unsigned int max_minute = 10;
-    unsigned int max_prod_status = 3;
-    unsigned int products_finished = 0;
     unsigned int time_of_rest = 0;
-
     std::vector<int> out_time;
     std::vector<int> out_prod;
 
 
     //create array with initial times of cells for resetting after they finished one working package (ap1 or ap2)
-    for (int i=0; i<worker_times.size(); i++){
+    for (unsigned int i=0; i<worker_times.size(); i++){
       worker_times[i] =(int) list_of_workers[i].minute1*list_of_workers[i].efficiency;
       worker_times2[i]=(int) list_of_workers[i].minute2*list_of_workers[i].efficiency;
     }
@@ -64,7 +62,7 @@ int main(){
      if(t%50==0) cout<<"t"<<t<<endl;
 
       //look for free worker with ap1 or ap2  =1 to start on a new product
-      for (int i=0;i<list_of_workers.size();i++){
+      for (unsigned int i=0;i<list_of_workers.size();i++){
 	if ((list_of_workers[i].skill1==1 || list_of_workers[i].skill2==1) && list_of_workers[i].status=="free"){
 	  init_product(list_of_products, list_of_workers[i]);
 	}
@@ -72,9 +70,9 @@ int main(){
 	
 
       //Loop cells to look for free cells and send waiting or looking products to them
-      for (int i=0;i<list_of_workers.size();i++){
+      for (unsigned int i=0;i<list_of_workers.size();i++){
 	if(list_of_workers[i].status=="free"){
-	  for (int j=0;j<list_of_products.size();j++){
+	  for (unsigned int j=0;j<list_of_products.size();j++){
 	  //cout<<list_of_products[j].name<< " has to find worker with skill "<< list_of_products[j].prod_status <<endl;
 	    if (((list_of_products[j].worked_by_next==list_of_workers[i].name && list_of_products[j].status=="waiting" ) ||\
 		((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && list_of_products[j].status=="looking" )) && \
@@ -96,10 +94,10 @@ int main(){
       }//for workers 
       
       //plan ahead here
-      for (int i=0;i<list_of_workers.size();i++){
-	for (int to=0; to<max_minute; to++){
+      for (unsigned int i=0;i<list_of_workers.size();i++){
+	for (unsigned int to=0; to<max_minute; to++){
 	  if(list_of_workers[i].minute1 == to && list_of_workers[i].work_next=="nothing" && list_of_workers[i].status=="free"){
-	    int j=0;
+	    unsigned int j=0;
 	    int looking=1;
 	    do{
 	      if((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && \
@@ -124,7 +122,7 @@ int main(){
       
          
       //Loop that reduces the minutes still needed of occupied workers and setting free ready workers and products
-     for (int j=0;j<list_of_workers.size();j++){
+     for (unsigned int j=0;j<list_of_workers.size();j++){
        if (list_of_workers[j].status=="occupied"){
 	 if(list_of_workers[j].current_skill_used==1){
 	  list_of_workers[j].minute1-=1;
@@ -139,7 +137,7 @@ int main(){
 	list_of_workers[j].minute1=worker_times[j];
 	list_of_workers[j].minute2=worker_times2[j];
 
-        for (int i=0;i<list_of_products.size();i++){
+        for (unsigned int i=0;i<list_of_products.size();i++){
 	  if (list_of_products[i].worked_by==list_of_workers[j].name){
 	    //list_of_products[i].prod_status+=1;
 	    if(list_of_products[i].worked_by_next=="noone"){
@@ -176,7 +174,7 @@ int main(){
 
   //TODO this is still a pretty naive approach for meassuring the time of non productivity of the cells
   //keep in mind that we start from scratch still, so th time of non productivity may rise till the system is filled
-    for (int j=0;j<list_of_workers.size();j++){
+    for (unsigned int j=0;j<list_of_workers.size();j++){
       if(list_of_workers[j].status=="free"){
 	time_of_rest++;
       }
@@ -189,7 +187,7 @@ int main(){
     if(t>=out_start){
       std::vector<vector<int> > out_run;
       //give status an int value
-      for(int cell=0; cell<list_of_workers.size(); cell++){
+      for(unsigned int cell=0; cell<list_of_workers.size(); cell++){
 	std::vector<int> row;
 	int status;
 	if(list_of_workers[cell].status=="occupied") {
