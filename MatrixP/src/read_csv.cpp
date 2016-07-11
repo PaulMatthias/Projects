@@ -1,9 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <assert.h>
+#include <sstream>
 #include <vector>
 #include <typeinfo>
-#include "parse.cpp"
+#include "../h/read_csv.h"
 
 using namespace std;
 
@@ -14,11 +15,22 @@ using namespace std;
 //  Zellenname | Arbeitspaket 1 | Arbeitspaket 2 | Effizienz (1=100%) | Zeit benoetigt fuer AP1 | Zeit benoetigt fuer AP2 //
 /*******************************************************************************/
 
+void separation(string line, std::vector<string>& vect){
+
+    std::string word;
+
+    std::stringstream ss(line);
+
+    while (getline(ss,word, ','))
+    {
+      vect.push_back(word);
+    }
+
+}
 
 
 
 
-//std::vector<string> main() {
 void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<string>& ap2,\
 	      std::vector<string>& minute1, std::vector<string>& minute2, std::vector<string>& efficiency) {
 
@@ -26,14 +38,14 @@ void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<s
     in.open("../input.csv");
     assert(in.is_open());
 
-    std::vector<string> separ;
     const int MAXSIZE =100; //this number controls the maximum number of signs are read per row, if input get bigger resize it
     char thisVal[MAXSIZE];
     int i=0;
 
     while(in.getline(thisVal,MAXSIZE)){
-	string str(thisVal);
-	separ=separate(thisVal);
+	std::string str(thisVal);
+	std::vector<std::string> separ;
+	separation(thisVal, separ);
 	names.push_back(separ[0]);
 	ap1.push_back(separ[1]);
 	ap2.push_back(separ[2]);
@@ -53,3 +65,7 @@ void read_csv(std::vector<string>& names, std::vector<string>& ap1,std::vector<s
     //print resulting vectors
 #endif
 }
+
+
+
+

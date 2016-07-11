@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef _PRODUCT_INCLUDE_
+#define _PRODUCT_INCLUDE_
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -33,3 +38,4 @@ class product{
     }
     
 };
+#endif

@@ -1,10 +1,14 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
-#include "init.cpp"
-#include "output.cpp"
+#include "../h/init.h"
+#include "../h/var.h"
+#include "../h/output.h"
 //#include "init_worker.cpp"
-#include "init_worker_from_file.cpp"
+#include "../h/init_worker_from_file.h"
+
+#define DEFINE_VARIABLES
 
 using namespace std;
 
@@ -13,12 +17,16 @@ using namespace std;
 int main(){
 
     unsigned int t, tmax, out_start;
+    int t_max;
 
     tmax=100;
     out_start=100;
 
-    std::vector<product> list_of_products = init_products();
-    std::vector<worker> list_of_workers = init_workers_from_file();
+    std::vector<product> list_of_products; 
+    init_products(list_of_products);
+    std::vector<worker> list_of_workers;
+    init_workers_from_file(list_of_workers);
+
     std::vector<int> worker_times;
     std::vector<int> worker_times2;
     worker_times.resize(list_of_workers.size());
@@ -26,6 +34,8 @@ int main(){
 
     string current_status;
     unsigned int current_prod_status;
+
+    init_sys_params("sys_params.dat", t_max);
 
     unsigned int max_minute = 10;
     unsigned int max_prod_status = 3;
@@ -177,7 +187,7 @@ int main(){
     out_prod.push_back(products_finished);
 
     if(t>=out_start){
-      std::vector<vector<int>> out_run;
+      std::vector<vector<int> > out_run;
       //give status an int value
       for(int cell=0; cell<list_of_workers.size(); cell++){
 	std::vector<int> row;

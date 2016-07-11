@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _WORKER_INCLUDE_
+#define _WORKER_INCLUDE_
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -52,3 +55,5 @@ class worker{
     }
 
 };
+
+#endif

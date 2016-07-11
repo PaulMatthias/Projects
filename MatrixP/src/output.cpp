@@ -1,5 +1,8 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include "../h/worker.h"
+#include "../h/product.h"
 
 using namespace std;
 

@@ -1,9 +1,9 @@
 Dies ist eine Simulation fuer einen Matrix Produktionssystem
 
 Wie starte ich die Simulation:
-0) Kontrolliere im "sys_param.dat" file, ob die gewuenschten Systemparameter gesetzt sind (sowie maximale Laufzeit oder aehnliches [Anm: diese Datei existiert noch nicht, wird aber in naher Zukunft noch angelegt])
-1) Kopiere das Input File welches verwendet werden soll, in den Hauptordner (in den selben in der auch diese README liegt)
-2) dann starte das skript mit "bash run.sh" (start aus dem terminal fuer linux systeme)
+0) Kontrolliere im "sys_param.dat" file, ob die gewuenschten Systemparameter gesetzt sind (sowie maximale Laufzeit oder aehnliches 
+1) Kopiere das Input File aus dem "input_files" Ordner, welches verwendet werden soll, in den Hauptordner (in den selben in der auch diese README liegt)
+2) dann starte das skript mit "bash run.sh" (start aus dem terminal fuer linux systeme), exe dateien fuer windows Systeme sollten folgen
 3) Auswertung sollte dann im Ordner plot/ erfolgen, indem individuelle Visualierungen gemacht werden koennen
 4) Rohdaten koennen sich im Ordner out/ angeschaut werden
 
