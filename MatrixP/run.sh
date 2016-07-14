@@ -2,9 +2,11 @@
 
 cd src/
 
-#make clean
 make
 
 ./main
+
+make clean
+
 cd ..
 

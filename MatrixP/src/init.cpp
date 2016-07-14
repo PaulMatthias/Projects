@@ -70,9 +70,16 @@ void init_sys_params(std::string dat, unsigned int& t_max, unsigned int& max_min
   }
 
 
+  cout<<endl;
+  cout<<"Initialize Parameters from sys_params.dat:"<<endl;
+  cout<<endl;
   //List here all values which have to be initialized per file
+  cout<<"Maximal Timestep:"<<endl;
   find(t_max);
+  cout<<"Maximal Step for planning ahead:"<<endl;
   find(max_minute);
+  cout<<"Maximal production step:"<<endl;
   find(max_prod_status);
+  cout<<"Timestep for starting output:"<<endl;
   find(out_start);
 }

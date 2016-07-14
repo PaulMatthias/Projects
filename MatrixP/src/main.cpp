@@ -55,11 +55,15 @@ int main(){
  * BEGIN MAIN LOOP
  * 
  * *********************************************************************************************/
-
+    cout<<endl;
+    cout<<"********************************************"<<endl;
     cout<<"Beginning Main Loop"<<endl;
+    cout<<"********************************************"<<endl;
+    cout<<endl;
+
     for (t=0;t<=tmax;++t){
 
-     if(t%50==0) cout<<"t"<<t<<endl;
+     if(t%50==0) cout<<"Timestep t="<<t<<" of "<<tmax<<endl;
 
       //look for free worker with ap1 or ap2  =1 to start on a new product
       for (unsigned int i=0;i<list_of_workers.size();i++){
@@ -208,11 +212,18 @@ int main(){
     }
 
   }//tmax
+
+  cout<<endl;
+  cout<<"********************************************"<<endl;
+  cout<<"Ending Main Loop"<<endl;
+  cout<<"********************************************"<<endl;
+  cout<<endl;
     
 
   output(out_time, out_prod, list_of_workers);
 
   cout<<"After timestep t="<<t<<" are "<<products_finished<<" products finished"<<endl;
+  cout<<endl;
     
   return 0;
 }
