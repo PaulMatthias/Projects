@@ -5,24 +5,24 @@
 #include "../h/init.h"
 #include "../h/var.h"
 #include "../h/output.h"
-//#include "init_worker.cpp"
+#include "../h/optimize.h"
+#include "../h/core_functions.h"
 #include "../h/init_worker_from_file.h"
 
 #define DEFINE_VARIABLES
 
 using namespace std;
 
-      //TODO add example for lineproduction
-      
 int main(){
 
     unsigned int t, out_start;
-
 
     unsigned int tmax=100;  //default value
     unsigned int max_minute = 10;
     unsigned int max_prod_status = 3;
     unsigned int products_finished = 0;
+    //TODO put this value in sys_param
+    unsigned int limit_of_rest = 2;
     out_start=100;
 
     std::vector<product> list_of_products; 
@@ -71,92 +71,41 @@ int main(){
 	  init_product(list_of_products, list_of_workers[i]);
 	}
       }
+
+      //Loop cells to look for free cells and send looking products to them
+      assign_prod_to_cell(list_of_workers, list_of_products);
+      
+      //optimize future steps and avoid too much freetime and production
+      //atm the optimal config is just a config with a low enough free time rate
+      //try out best solution approach later on
+      int rest_orig=plan_ahead(list_of_workers, list_of_products, worker_times, worker_times2, max_minute, t, max_prod_status);
+      if(rest_orig>=limit_of_rest){
+	int j=0;
+	int rest_opt;
+	std::vector<worker> workers_opt;
+	std::vector<product> products_opt;
+	while(optimize_mc(list_of_workers, workers_opt, list_of_products, products_opt, worker_times, worker_times2, max_minute, t, max_prod_status, rest_opt)>=limit_of_rest){
+	  j++;
+	  if(j>=20) break;
+	}
+	if(j<20 && rest_opt<rest_orig){
+	  list_of_workers=workers_opt;
+	  list_of_products=products_opt;
+	} else{
+	  cout<<"Rest Time before: "<<rest_orig<<endl;
+	  cout<<"Rest Time after opt: "<<rest_opt<<endl;
+	}
+      }
 	
-
-      //Loop cells to look for free cells and send waiting or looking products to them
-      for (unsigned int i=0;i<list_of_workers.size();i++){
-	if(list_of_workers[i].status=="free"){
-	  for (unsigned int j=0;j<list_of_products.size();j++){
-	  //cout<<list_of_products[j].name<< " has to find worker with skill "<< list_of_products[j].prod_status <<endl;
-	    if (((list_of_products[j].worked_by_next==list_of_workers[i].name && list_of_products[j].status=="waiting" ) ||\
-		((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && list_of_products[j].status=="looking" )) && \
-	    list_of_workers[i].status=="free"){
-	      list_of_workers[i].status="occupied";
-	      list_of_workers[i].work_next="nothing";
-	      list_of_products[j].status="engaged";
-	      list_of_products[j].worked_by=list_of_workers[i].name;
-	      list_of_products[j].worked_by_next="noone";
-	      list_of_products[j].prod_status+=1;
-	      if(list_of_products[j].prod_status==list_of_workers[i].skill1){
-		list_of_workers[i].current_skill_used=1;
-	      }else if(list_of_products[j].prod_status==list_of_workers[i].skill2){
-		list_of_workers[i].current_skill_used=2;
-	      }
-	    }// if status + skill1
-	  }//for products
-	} 
-      }//for workers 
-      
-      //plan ahead here
-      for (unsigned int i=0;i<list_of_workers.size();i++){
-	for (unsigned int to=0; to<max_minute; to++){
-	  if(list_of_workers[i].minute1 == to && list_of_workers[i].work_next=="nothing" && list_of_workers[i].status=="free"){
-	    unsigned int j=0;
-	    int looking=1;
-	    do{
-	      if((list_of_products[j].prod_status+1==list_of_workers[i].skill1 || list_of_products[j].prod_status+1==list_of_workers[i].skill2) && \
-		 list_of_products[j].worked_by_next=="noone" && \
-		 list_of_products[j].worked_by!=list_of_workers[i].name && \
-		 //list_of_products[j].status=="engaged" && 
-		 list_of_workers[i].work_next=="nothing"){
-		    list_of_products[j].worked_by_next=list_of_workers[i].name;
-		    list_of_workers[i].work_next=list_of_products[j].name;
-		    looking=0;
-		    //cout<<"Found match"<<endl;
-	      }
-	      j++;
-	      if(j==list_of_products.size()){
-		//cout<<"Found no possible match for the next step"<<endl;
-		looking=0;
-	      }
-	    } while (looking); 
-	  }
+      //Integral Time of Rest
+      for (unsigned int j=0;j<list_of_workers.size();j++){
+	if(list_of_workers[j].status=="free"){
+	  time_of_rest++;
 	}
       }
-      
-         
-      //Loop that reduces the minutes still needed of occupied workers and setting free ready workers and products
-     for (unsigned int j=0;j<list_of_workers.size();j++){
-       if (list_of_workers[j].status=="occupied"){
-	 if(list_of_workers[j].current_skill_used==1){
-	  list_of_workers[j].minute1-=1;
-	 }else if(list_of_workers[j].current_skill_used==2){
-	  list_of_workers[j].minute2-=1;
-	 }
-         //cout<<list_of_workers[j].name<< " is "<< list_of_workers[j].status<<endl;
-       }
-       if ((list_of_workers[j].minute1==0 && list_of_workers[j].skill1!=0) || (list_of_workers[j].minute2==0 && list_of_workers[j].skill2)) {
-	list_of_workers[j].status="free";
-	list_of_workers[j].current_skill_used=0;
-	list_of_workers[j].minute1=worker_times[j];
-	list_of_workers[j].minute2=worker_times2[j];
 
-        for (unsigned int i=0;i<list_of_products.size();i++){
-	  if (list_of_products[i].worked_by==list_of_workers[j].name){
-	    //list_of_products[i].prod_status+=1;
-	    if(list_of_products[i].worked_by_next=="noone"){
-	      list_of_products[i].status="looking";
-	    } else {
-	      list_of_products[i].status="waiting";
-	    }
-	    list_of_products[i].worked_by="noone";
-	    if (list_of_products[i].prod_status==max_prod_status){
-	      products_finished++; //count the numbers of finshed products
-	    }
-	  }
-	 }
-	}
-      }
+      //Reduce time needed here and set free finished working cells      
+      products_finished=red_and_set_free(list_of_workers, list_of_products, worker_times, worker_times2, products_finished, max_prod_status);
 
 
 
@@ -176,13 +125,6 @@ int main(){
 #endif
     
 
-  //TODO this is still a pretty naive approach for meassuring the time of non productivity of the cells
-  //keep in mind that we start from scratch still, so th time of non productivity may rise till the system is filled
-    for (unsigned int j=0;j<list_of_workers.size();j++){
-      if(list_of_workers[j].status=="free"){
-	time_of_rest++;
-      }
-    }
 
     //Creating output arrays
     out_time.push_back(time_of_rest);
