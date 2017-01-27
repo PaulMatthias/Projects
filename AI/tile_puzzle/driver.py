@@ -11,10 +11,16 @@ class Board:
         self.size=size
         self.all_tiles=[]
 
+    def __eq__(self,other):
+        for i in range(0,self.size):
+            if self.all_tiles[i].value!=other.all_tiles[i].value:
+                return False
+        return True
+
 
     def switch_tile_vals(self, element_one, element_two):
         tmp=self.all_tiles[element_one].value
-        print("switch tile ",element_one," with value ",self.all_tiles[element_one].value," with the tile ",element_two, " with value ",self.all_tiles[element_two].value)
+       # print("switch tile ",element_one," with value ",self.all_tiles[element_one].value," with the tile ",element_two, " with value ",self.all_tiles[element_two].value)
         self.all_tiles[element_one].value=self.all_tiles[element_two].value;
         self.all_tiles[element_two].value=tmp
         return
@@ -47,6 +53,9 @@ def get_neighbours(board):
                 tiles[i].save_neighbours(i+1)
     return
 
+#---------------------------------------------------------------------------------------
+# BREADTH FIRST SEARCH
+#---------------------------------------------------------------------------------------
 
 def Breadth_First_Search(board, goal_board):
     print("Beginning BFS")
@@ -56,42 +65,105 @@ def Breadth_First_Search(board, goal_board):
     
     counter=0
     while fringe:
-        state=fringe[0]
+        state=copy.deepcopy(fringe[0])
         explored.append(state)
-        print("Elements in the fringe: ", len(fringe))
+        #print("Elements in the fringe: ", len(fringe))
 
         if state==goal_board:
+            print("explore ",counter," states to solve the tile puzzle")
             return state
 
         for i in range(0,state.size):
-            print("checking tile on the board for moving tile 0 at pos ",i)
+        #    print("checking tile on the board for moving tile 0 at pos ",i)
             if state.all_tiles[i].value==0:
-                print("found tile 0")
+         #       print("found tile 0")
                 for el in range(0,len(state.all_tiles[i].next)):
-                    print("create new states for the ",len(state.all_tiles[i].next), " neighbours, currently ",el)
+          #          print("create new states for the ",len(state.all_tiles[i].next), " neighbours, currently ",el)
                     new_state=copy.deepcopy(state)
                     new_state.switch_tile_vals(i, state.all_tiles[i].next[el])
-                    if new_state not in explored:
-                        print("add new state to the fringe")
+                    is_new=True
+                    for ex in range(0,len(explored)):
+                        if new_state==explored[ex]:
+           #                 print("new state already explored")
+                            is_new=False
+                    for fr in range(0,len(fringe)):
+                        if new_state==fringe[fr]:
+            #                print("new state already in the fringe")
+                            is_new=False
+                    if is_new:
+             #           print("add new state to the fringe")
                         fringe.append(new_state)
+
         counter=counter+1
-        #if counter==5:
-        #    break
-            
+        #delete first element in the fringe and order the rest accoridngly
+        fringe.pop(0)
 
+        #for z in range(0,3):
+        #    print(fringe[0].all_tiles[z*3].value, fringe[0].all_tiles[z*3+1].value,fringe[0].all_tiles[z*3+2].value)
+        #print("\n")
+
+
+    return 
+
+#---------------------------------------------------------------------------------------
+# DEPTH FIRST SEARCH
+#---------------------------------------------------------------------------------------
+
+def Depth_First_Search(board, goal_board):
+    print("\n\n")
+    print("Beginning DFS")
+    fringe=[]
+    explored=[]
+    fringe.append(board)
     
-        
+    counter=0
+    while fringe:
+        state=copy.deepcopy(fringe[-1])
+        fringe.pop(-1)
+        explored.append(state)
+        #print("Elements in the fringe: ", len(fringe))
 
-    return FAILURE
+        if state==goal_board:
+         #   print("used ",counter," moves to solve the tile puzzle")
+            return state
+
+        for i in range(0,state.size):
+            #print("checking tile on the board for moving tile 0 at pos ",i)
+            if state.all_tiles[i].value==0:
+             #   print("found tile 0")
+                for el in range(len(state.all_tiles[i].next)-1,-1,-1):
+              #      print("create new states for the ",len(state.all_tiles[i].next), " neighbours, currently ",el)
+                    new_state=copy.deepcopy(state)
+                    new_state.switch_tile_vals(i, state.all_tiles[i].next[el])
+                    is_new=True
+                    for ex in range(0,len(explored)):
+                        if new_state==explored[ex]:
+                 #           print("new state already explored")
+                            is_new=False
+                    for fr in range(0,len(fringe)):
+                        if new_state==fringe[fr]:
+                #            print("new state already in the fringe")
+                            is_new=False
+                    if is_new:
+               #         print("add new state to the fringe")
+                        fringe.append(new_state)
+
+        counter=counter+1
+        print(counter)
+        #if counter>50:
+        #    break
+        #delete first element in the fringe and order the rest accoridngly
+
+        #for z in range(0,3):
+        #    print(fringe[-1].all_tiles[z*3].value, fringe[-1].all_tiles[z*3+1].value,fringe[-1].all_tiles[z*3+2].value)
+        #print("\n")
 
 
+    return 
 
-
-
-
-
-
-
+#------------------------------------------------------------------------------------
+#Beginning MAIN program
+#------------------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("algorithm", action="store")
 parser.add_argument("tiles", action="store")
@@ -126,19 +198,18 @@ for x in range(0,len(init_dist)):
 #    print("val: ", goal_board.all_tiles[i].value, "\n")
 #
 
-Breadth_First_Search(board, goal_board)
+if args.algorithm=="bfs":
+    final_state=Breadth_First_Search(board, goal_board)
+elif args.algorithm=="dfs":
+    final_state=Depth_First_Search(board, goal_board)
 
 
 
 
 
-
-
-
-
-
-
-
-
+print("Final State:")
+for i in range(0,final_state.size):
+    print(final_state.all_tiles[i].value)
+print("\n")
 
 
