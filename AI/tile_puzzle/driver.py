@@ -12,14 +12,14 @@ class Board:
     def __init__(self, size):
         self.size=size
         self.all_tiles=[]
+        self.neighbours=[[] for _ in xrange(size)]
         self.parent_state=self
         self.pos_in_explored=0
 
     def __eq__(self,other):
-        for i in range(0,self.size):
-            if self.all_tiles[i].value!=other.all_tiles[i].value:
-                return False
-        return True
+        if self.all_tiles==other.all_tiles:
+            return True
+        return False
 
     def print_state(self):
         for i in range(0,int(math.sqrt(self.size))):
@@ -27,42 +27,35 @@ class Board:
         print("\n")
         
 
-    def store_parent(self, state, pos):
-        self.parent_state=state
+    def store_parent(self, pos):
+        #self.parent_state=state
         self.pos_in_explored=pos
 
     def switch_tile_vals(self, element_one, element_two):
-        tmp=self.all_tiles[element_one].value
-        self.all_tiles[element_one].value=self.all_tiles[element_two].value;
-        self.all_tiles[element_two].value=tmp
+        tmp=self.all_tiles[element_one]
+        self.all_tiles[element_one]=self.all_tiles[element_two];
+        self.all_tiles[element_two]=tmp
         return
 
+    def save_neighbours(self, tile_number, neighbour_tile):
+        self.neighbours[tile_number].append(neighbour_tile);
 
-class Tile:
-    'One tile of the puzzle'
 
-    def __init__(self, pos, value):
-        self.pos=pos
-        self.value=value
-        self.next=[]
-
-    def save_neighbours(self, neighbour_tile):
-        self.next.append(neighbour_tile);
+#END OF CLASS DECLARATION:
 
 def get_neighbours(board):
     width=math.sqrt(board.size)
-    tiles=board.all_tiles
     for i in range (0, board.size):
         if i-width>=0:
-            tiles[i].save_neighbours(int(i-width))
+            board.save_neighbours(i,int(i-width))
         if i+width<board.size:
-            tiles[i].save_neighbours(int(i+width))
+            board.save_neighbours(i,int(i+width))
         if i-1>=0:
             if i%width!=0:
-                tiles[i].save_neighbours(i-1)
+                board.save_neighbours(i,i-1)
         if i+1<board.size:
             if (i+1)%width!=0:
-                tiles[i].save_neighbours(i+1)
+                board.save_neighbours(i,i+1)
     return
 
 #returns path to goal
@@ -71,7 +64,7 @@ def parents_list(start_state, goal_state, explored):
     path_to_goal=[]
     path_to_goal.append(goal_state)
     while not path_to_goal[-1]==start_state:
-        path_to_goal.append(path_to_goal[-1].parent_state)
+        path_to_goal.append(explored[path_to_goal[-1].pos_in_explored-1])
     path_to_goal=list(reversed(path_to_goal))
     return path_to_goal
 
@@ -81,9 +74,9 @@ def get_list_of_moves(path):
     width=int(math.sqrt(path[0].size))
     for i in range(0,len(path_to_goal)-1):
         for tile in range(0,len(path_to_goal[i].all_tiles)):
-            if path_to_goal[i].all_tiles[tile].value==0:
+            if path_to_goal[i].all_tiles[tile]==0:
                 for tile_next in range(0,len(path_to_goal[i+1].all_tiles)):
-                    if path_to_goal[i+1].all_tiles[tile_next].value==0:
+                    if path_to_goal[i+1].all_tiles[tile_next]==0:
                         if tile==tile_next+1:
                             list_of_moves.append('Left')
                         if tile==tile_next-1:
@@ -110,7 +103,7 @@ def Breadth_First_Search(board, goal_board):
     fringe=[]
     explored=[]
     fringe.append(board)
-    board.store_parent(board, 0)
+    board.store_parent(0)
     
     max_fringe_size=1
     nodes_exp=1
@@ -124,11 +117,11 @@ def Breadth_First_Search(board, goal_board):
 
         for i in range(0,state.size):
         #    print("checking tile on the board for moving tile 0 at pos ",i)
-            if state.all_tiles[i].value==0:
+            if state.all_tiles[i]==0:
          #       print("found tile 0")
-                for el in range(0,len(state.all_tiles[i].next)):
+                for el in range(0,len(state.neighbours[i])):
                     new_state=copy.deepcopy(state)
-                    new_state.switch_tile_vals(i, state.all_tiles[i].next[el])
+                    new_state.switch_tile_vals(i, el)
                     is_new=True
                     for ex in range(0,len(explored)):
                         if new_state==explored[ex]:
@@ -138,7 +131,7 @@ def Breadth_First_Search(board, goal_board):
                             is_new=False
                     if is_new:
                         fringe.append(new_state)
-                        new_state.store_parent(state, len(explored))
+                        new_state.store_parent(len(explored))
                         nodes_exp=nodes_exp+1
                         if max_fringe_size<len(fringe):
                             max_fringe_size=len(fringe)
@@ -175,28 +168,57 @@ def Depth_First_Search(board, goal_board):
         if state==goal_board:
             return state
 
+        time_copy_acc=0
+        time_move_acc=0
+        time_explore_acc=0
+        time_fringe_acc=0
+
         for i in range(0,state.size):
-            if state.all_tiles[i].value==0:
-                for el in range(len(state.all_tiles[i].next)-1,-1,-1):
+            if state.all_tiles[i]==0:
+                for el in range(len(state.neighbours[i])-1,-1,-1):
+                    time=timeit.default_timer()
                     new_state=copy.deepcopy(state)
-                    new_state.switch_tile_vals(i, state.all_tiles[i].next[el])
+                    time_copy=timeit.default_timer()
+                    new_state.switch_tile_vals(i, state.neighbours[i][el])
+                    time_move=timeit.default_timer()
                     is_new=True
-                    for ex in range(0,len(explored)):
-                        if new_state==explored[ex]:
-                            is_new=False
-                    for fr in range(0,len(fringe)):
-                        if new_state==fringe[fr]:
-                            is_new=False
+                    #for ex in range(0,len(explored)):
+                    #    if new_state==explored[ex]:
+                    #        is_new=False
+                    if new_state in explored:
+                        is_new=False
+                    time_explore=timeit.default_timer()
+                    #for fr in range(0,len(fringe)):
+                    #    if new_state==fringe[fr]:
+                    #        is_new=False
+                    if new_state in fringe:
+                        is_new=False
+                    time_fringe=timeit.default_timer()
                     if is_new:
                         fringe.append(new_state)
-                        new_state.store_parent(state, len(explored))
+                        new_state.store_parent(len(explored))
                         nodes_exp=nodes_exp+1
                         if max_fringe_size<len(fringe):
                             max_fringe_size=len(fringe)
-                        if new_state==goal_board:
-                            print("max_fringe_size:", max_fringe_size)
-                            print("nodes_expanded:", nodes_exp)
-                            return parents_list(board, new_state, explored)
+                        # would include exploring of child nodes instantaneous
+                        #if new_state==goal_board:
+                        #    print("max_fringe_size:", max_fringe_size)
+                        #    print("nodes_expanded:", nodes_exp)
+                        #    return parents_list(board, new_state, explored)
+                    time_copy_acc+=time_copy-time
+                    time_move_acc+=time_move-time_copy
+                    time_explore_acc+=time_explore-time_move
+                    time_fringe_acc+=time_fringe-time_explore
+        #print("time for copy: ",time_copy_acc)
+        #print("time for move: ",time_move_acc)
+        #print("time for explore: ",time_explore_acc)
+        #print("time for fringe: ",time_fringe_acc)
+        #print("max_fringe_size:", max_fringe_size)
+        #print("explored size:", len(explored))
+        print("nodes_expanded:", nodes_exp)
+        print("\n")
+        if fringe[-1]==goal_board:
+            return parents_list(board, new_state, explored)
 
     return 
 
@@ -215,9 +237,8 @@ args=parser.parse_args()
 init_dist=[int(x) for x in args.tiles.split(',')]
 
 board=Board(len(init_dist))
-for x in range(0,len(init_dist)):
-    tile=Tile(x, init_dist[x])
-    board.all_tiles.append(tile)
+for x in init_dist:
+    board.all_tiles.append(x)
 
 #get neighbours for creating the next states for the search space
 get_neighbours(board)
@@ -225,8 +246,7 @@ get_neighbours(board)
 #initialze goal state
 goal_board=Board(len(init_dist))
 for x in range(0,len(init_dist)):
-    tile=Tile(x, x)
-    goal_board.all_tiles.append(tile)
+    goal_board.all_tiles.append(x)
 
 
 #Calling the specified algorithms
