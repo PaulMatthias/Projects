@@ -1,0 +1,8 @@
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'arcanist/06-2015'
+ModuleCmd_Load.c(213):ERROR:105: Unable to locate a modulefile for 'gtest/1.6.0'
+29872
+ 
+** jobname: tile_puzzle
+** SLURM_JOB_ID = 29872
+** FOLDER = 
+slurmstepd: *** JOB 29872 ON node078 CANCELLED AT 2017-01-30T14:14:31 ***

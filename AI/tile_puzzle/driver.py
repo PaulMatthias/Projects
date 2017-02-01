@@ -94,7 +94,7 @@ def Breadth_First_Search(board, goal_board):
              #           print("add new state to the fringe")
                         fringe.append(new_state)
 
-        counter=counter+1
+        counter=sounter+1
         #delete first element in the fringe and order the rest accoridngly
         fringe.pop(0)
 
@@ -147,9 +147,8 @@ def Depth_First_Search(board, goal_board):
                     if is_new:
                #         print("add new state to the fringe")
                         fringe.append(new_state)
-
-        counter=counter+1
-        print(counter)
+			counter=counter+1
+			print(counter)
         #if counter>50:
         #    break
         #delete first element in the fringe and order the rest accoridngly
