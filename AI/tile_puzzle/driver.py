@@ -12,6 +12,7 @@ class Board:
     def __init__(self, size):
         self.size=size
         self.all_tiles=[]
+        self.all_tiles_int=0
         self.neighbours=[[] for _ in xrange(size)]
         self.parent_state=self
         self.pos_in_explored=0
@@ -66,10 +67,8 @@ def get_neighbours(board):
 def parents_list(start_state, goal_state, explored):
     path_to_goal=[]
     path_to_goal.append(goal_state)
-    path_to_goal.append(explored[-path_to_goal[-1].pos_in_explored-1])
-
     while not path_to_goal[-1]==start_state:
-      path_to_goal.append(explored[-path_to_goal[-1].pos_in_explored-1])
+      path_to_goal.append(explored[path_to_goal[-1].pos_in_explored-1])
       if path_to_goal[-1].pos_in_explored-1==0:
 	path_to_goal.append(start_state)
     
@@ -95,6 +94,10 @@ def get_list_of_moves(path):
                             list_of_moves.append('Down')
     return list_of_moves
 
+def list_to_int(li):
+  s=''.join(map(str, li))
+  return int(s)
+
 
 
 
@@ -108,49 +111,64 @@ def Breadth_First_Search(board, goal_board):
     print("\n")
     print("Beginning BFS")
     print("\n")
+    f=open('time_for_step_bfs', 'w')
     fringe=[]
+    fringe_set=set()
     explored=[]
+    explored_set=set()
+    board.pos_in_explored=0
+
     fringe.append(board)
-    board.store_parent(0)
+    fringe_set.add(list_to_int(board.all_tiles))
     
     max_fringe_size=1
-    nodes_exp=1
     while fringe:
+	time_start=timeit.default_timer()
         state=copy.deepcopy(fringe[0])
+        fringe.pop(0)
+	fringe_set.discard(state.all_tiles_int)
         explored.append(state)
+        explored_set.add(state.all_tiles_int)
 
-        if state==goal_board:
-            print("explore ",nodes_exp," states to solve the tile puzzle")
-            return state
+        if state.all_tiles==goal_board.all_tiles:
+            return parents_list(board, state, explored)
 
-        for i in range(0,state.size):
-        #    print("checking tile on the board for moving tile 0 at pos ",i)
+        for i in xrange(0,state.size):
             if state.all_tiles[i]==0:
-         #       print("found tile 0")
-                for el in range(0,len(state.neighbours[i])):
+                for el in xrange(0,len(state.neighbours[i])):
                     new_state=copy.deepcopy(state)
-                    new_state.switch_tile_vals(i, el)
+                    new_state.switch_tile_vals(i, state.neighbours[i][el])
+                    new_state.all_tiles_int=list_to_int(new_state.all_tiles)
                     is_new=True
-                    for ex in range(0,len(explored)):
-                        if new_state==explored[ex]:
-                            is_new=False
-                    for fr in range(0,len(fringe)):
-                        if new_state==fringe[fr]:
-                            is_new=False
+		    if new_state.all_tiles_int in explored_set:
+			print("new_state already in explored")
+			is_new=False
+		    if new_state.all_tiles_int in fringe_set:
+			print("new_state already in fringe")
+                        is_new=False
                     if is_new:
                         fringe.append(new_state)
-                        new_state.store_parent(len(explored))
-                        nodes_exp=nodes_exp+1
+			fringe_set.add(new_state.all_tiles_int)
+                        new_state.pos_in_explored=len(explored)
                         if max_fringe_size<len(fringe):
                             max_fringe_size=len(fringe)
-                        if new_state==goal_board:
-                            print("max_fringe_size:", max_fringe_size)
-                            print("nodes_expanded:", nodes_exp)
-                            return parents_list(board, new_state, explored)
 
-        counter=counter+1
-        #delete first element in the fringe and order the rest accoridngly
-        fringe.pop(0)
+	explored_set.add(state.all_tiles_int)
+	time_end=timeit.default_timer()
+
+	nodes_exp=len(explored_set)+len(fringe_set)
+	print("nodes_expanded :", nodes_exp)
+        print("explored: ", len(explored))
+        print("fringe: ", len(fringe))
+	ne=str(nodes_exp)+" "+str(time_end-time_start)+"\n"
+	s=str(ne)
+	f.write(s)
+        #print("\n")
+	if not fringe:
+	    state.print_state()
+            return parents_list(board, state, explored)
+
+
 
     return 
 
@@ -162,8 +180,10 @@ def Depth_First_Search(board, goal_board):
     print("\n\n")
     print("Beginning DFS")
     print("\n")
-    f=open('time_for_step', 'w')
+    f=open('time_for_step_dfs', 'w')
     fringe=[]
+    fringe_set=set()
+    explored=[]
     explored_set=set()
     fringe.append(board)
     
@@ -176,6 +196,8 @@ def Depth_First_Search(board, goal_board):
 	time_start=timeit.default_timer()
         state=copy.deepcopy(fringe[-1])
         fringe.pop(-1)
+	fringe_set.discard(state.all_tiles_int)
+	explored.append(state)
 
         time_copy_acc=0
         time_move_acc=0
@@ -189,22 +211,23 @@ def Depth_First_Search(board, goal_board):
         for i in xrange(0,state.size):
             if state.all_tiles[i]==0:
                 for el in xrange(len(state.neighbours[i])-1,-1,-1):
-                #for el in xrange(0,len(state.neighbours[i])):
                     time=timeit.default_timer()
                     new_state=copy.deepcopy(state)
                     time_copy=timeit.default_timer()
                     new_state.switch_tile_vals(i, state.neighbours[i][el])
+		    new_state.all_tiles_int=list_to_int(new_state.all_tiles)
                     is_new=True
                     time_move=timeit.default_timer()
-                    if new_state in explored_set:
+                    if new_state.all_tiles_int in explored_set:
                         is_new=False
                     time_explore=timeit.default_timer()
-                    if new_state in fringe:
+                    if new_state.all_tiles_int in fringe_set:
                         is_new=False
                     time_fringe=timeit.default_timer()
                     if is_new:
                         fringe.append(new_state)
-                        new_state.pos_in_explored=len(explored_set)
+			fringe_set.add(new_state.all_tiles_int)
+                        new_state.pos_in_explored=len(explored)
                         nodes_exp=nodes_exp+1
                         if max_fringe_size<len(fringe):
                             max_fringe_size=len(fringe)
@@ -227,7 +250,7 @@ def Depth_First_Search(board, goal_board):
         #print("time for fringe: ",time_fringe_acc)
         #print("time for is_new: ",time_final_acc)
 	
-	explored_set.add(state)
+	explored_set.add(state.all_tiles_int)
 
 	time_end=timeit.default_timer()
         #print("time for explore one state: ",time_end-time_start)
@@ -239,9 +262,8 @@ def Depth_First_Search(board, goal_board):
 	f.write(s)
         #print("\n")
         if fringe[-1].all_tiles==goal_board.all_tiles:
-	    explored_set.add(fringe[-1])
-	    explored_list=list(explored_set)
-            return parents_list(board, fringe[-1], explored_list)
+	    explored.append(fringe[-1])
+            return parents_list(board, fringe[-1], explored)
 
     return 
 
@@ -262,6 +284,7 @@ init_dist=[int(x) for x in args.tiles.split(',')]
 board=Board(len(init_dist))
 for x in init_dist:
     board.all_tiles.append(x)
+board.all_tiles_int=list_to_int(board.all_tiles)
 
 #get neighbours for creating the next states for the search space
 get_neighbours(board)
@@ -270,6 +293,7 @@ get_neighbours(board)
 goal_board=Board(len(init_dist))
 for x in range(0,len(init_dist)):
     goal_board.all_tiles.append(x)
+goal_board.all_tiles_int=list_to_int(goal_board.all_tiles)
 
 
 #Calling the specified algorithms

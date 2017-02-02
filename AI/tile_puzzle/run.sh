@@ -1,11 +1,19 @@
 #!/bin/bash
 #python driver.py bfs 1,2,5,3,4,0,6,7,8
-python driver.py dfs 1,2,5,3,4,0,6,7,8
+#python driver.py bfs 1,2,5,3,4,8,6,7,0
+#python driver.py bfs 1,4,2,3,5,8,6,7,0
+#python driver.py bfs 3,1,2,4,7,5,6,8,0
+
+python driver.py bfs 1,3,2,6,4,5,7,8,0
+
+#python driver.py dfs 1,2,5,3,4,0,6,7,8
+#python driver.py dfs 1,2,5,3,4,0,6,7,8
 #python driver.py bfs 3,1,2,0,4,5,6,7,8
 #python driver.py dfs 3,1,2,0,4,5,6,7,8
-#python driver.py dfs 1,2,3,5,4,0,6,7,8 #returns maximum recursion depth overflow
-#python driver.py bfs 2,3,6,4,5,1,5,8,0 run over 5 mins...
-#python driver.py bfs 3,1,2,0,4,5,6,7,8
+#python driver.py dfs 1,2,3,5,4,0,6,7,8 
+#python driver.py bfs 2,3,6,4,5,1,7,8,0 
+
+#Trival examples for dfs
 #python driver.py dfs 3,1,2,0,4,5,6,7,8
 #python driver.py dfs 3,1,2,6,4,5,0,7,8
 #python driver.py dfs 1,4,2,3,7,5,6,0,8
