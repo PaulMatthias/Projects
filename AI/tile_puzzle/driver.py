@@ -16,6 +16,8 @@ class Board:
         self.neighbours=[[] for _ in xrange(size)]
         self.parent_state=self
         self.pos_in_explored=0
+        self.cost=0
+        self.estimated_cost=0
 
     def __eq__(self,other):
         if self.all_tiles==other.all_tiles:
@@ -97,6 +99,119 @@ def get_list_of_moves(path):
 def list_to_int(li):
   s=''.join(map(str, li))
   return int(s)
+
+
+def val_of_heu(state, goal_state):
+    #Manhattan priority function (distance of Tiles from their goal place)
+    val=0
+    width=math.sqrt(state.size)
+    for i in range(0,state.size):
+        number=state.all_tiles[i]
+        #skip zero tile, because its not considered a tile here
+        if number==0:
+            continue
+        goal=goal_state.all_tiles.index(number)
+        #if tile already in place take no action
+        if goal==i:
+            continue
+        else:
+            diff=abs(i-goal)
+            val+=diff%width+int(diff/width)
+
+    return val
+
+def calc_heur(state, goal_state):
+    val=state.cost+val_of_heu(state, goal_state)
+    return val
+
+#---------------------------------------------------------------------------------------
+# A STAR SEARCH
+#---------------------------------------------------------------------------------------
+
+def A_Star_Search(board, goal_board):
+    print("\n")
+    print("\n")
+    print("Beginning A*")
+    print("\n")
+    f=open('time_for_step_astar', 'w')
+    fringe=[]
+    fringe_set=set()
+    explored=[]
+    explored_set=set()
+    board.pos_in_explored=0
+    board.estimated_cost=calc_heur(board, goal_board)
+
+    fringe.append(board)
+    fringe_set.add(list_to_int(board.all_tiles))
+    
+    max_fringe_size=1
+    while fringe:
+	time_start=timeit.default_timer()
+        state=copy.deepcopy(fringe[0])
+        fringe.pop(0)
+	fringe_set.discard(state.all_tiles_int)
+        explored.append(state)
+        explored_set.add(state.all_tiles_int)
+
+        if state.all_tiles==goal_board.all_tiles:
+            return parents_list(board, state, explored)
+
+        for i in xrange(0,state.size):
+            if state.all_tiles[i]==0:
+                for el in xrange(0,len(state.neighbours[i])):
+                    new_state=copy.deepcopy(state)
+                    new_state.switch_tile_vals(i, state.neighbours[i][el])
+                    new_state.all_tiles_int=list_to_int(new_state.all_tiles)
+                    new_state.cost=state.cost+1
+                    is_new=True
+		    if new_state.all_tiles_int in explored_set:
+			#print("new_state already in explored")
+			is_new=False
+                    if is_new:
+                        if new_state.all_tiles_int in fringe_set:
+                            #print("new_state already in fringe, maybe decrease key")
+                            #comp_state=copy.deepcopy(fringe[fringe.index(new_state)])
+                            comp_state=fringe[fringe.index(new_state)]
+                            if comp_state.estimated_cost>new_state.estimated_cost:
+                                fringe.pop(fringe.index(new_state))
+                                is_new=True
+                            else:
+                                is_new=False
+                    if is_new:
+                        new_state.estimated_cost=calc_heur(new_state, goal_board)
+                        was_added=False
+                        for pos in xrange(0,len(fringe)):
+                            if fringe[pos].estimated_cost<new_state.estimated_cost:
+                                continue
+                            else:
+                                fringe.insert(pos, new_state)
+                                was_added=True
+                                break
+                        if not fringe:
+                            fringe.insert(0, new_state)
+                        if not was_added:
+                            fringe.append(new_state)
+			fringe_set.add(new_state.all_tiles_int)
+                        new_state.pos_in_explored=len(explored)
+                        if max_fringe_size<len(fringe):
+                            max_fringe_size=len(fringe)
+
+	explored_set.add(state.all_tiles_int)
+	time_end=timeit.default_timer()
+
+	nodes_exp=len(explored_set)+len(fringe_set)
+	print("nodes_expanded :", nodes_exp)
+        print("explored: ", len(explored))
+        print("fringe: ", len(fringe))
+	ne=str(nodes_exp)+" "+str(time_end-time_start)+"\n"
+	s=str(ne)
+	f.write(s)
+        #print("\n")
+	if not fringe:
+	    state.print_state()
+            return parents_list(board, state, explored)
+
+    return 
 
 
 
@@ -303,6 +418,8 @@ if args.algorithm=="bfs":
     path_to_goal=Breadth_First_Search(board, goal_board)
 elif args.algorithm=="dfs":
     path_to_goal=Depth_First_Search(board, goal_board)
+elif args.algorithm=="ast":
+    path_to_goal=A_Star_Search(board, goal_board)
 
 #printing the solution step by step
 #for i in range(0,len(path_to_goal)):
