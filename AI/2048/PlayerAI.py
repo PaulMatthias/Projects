@@ -20,120 +20,147 @@ def heur_order(grid):
             val+=tmp
     return val
 
+def heur_smooth(grid):
+    val=0
+    tmp=0
+    for i in xrange(0,grid.size):
+        for j in xrange(0,grid.size-1):
+            if grid.map[i][j+1]>grid.map[i][j]:
+                tmp+=1
+            if grid.map[j+1][i]>grid.map[j][i]:
+                tmp+=1
+            val+=tmp
+    return val
+
+def calc_heur(grid):
+    fac_order=0.5
+    fac_smooth=0.5
+    val=fac_order*heur_order(grid)
+    val+=fac_smooth*heur_smooth(grid)
+    return val
 
 
 class PlayerAI(BaseAI):
     def __init__(self):
         self.turn=0
+
     def getMove(self, grid):
         time=timeit.default_timer()
-        time_calc=timeit.default_timer()
-        fringe=[]
-        fringe.append(grid)
-	alpha=-infinity
-	beta=+infinity
-	depth=8
+	alpha=-float("inf")
+	beta=float("inf")
+	depth=1
+	saved_move=0
+	time_calc=timeit.default_timer()
 	
-        while time_calc-time<0.09:
-            max_list=[]
-            fringe_new=[]
-            moves_done=[]
+        #while time_calc-time<0.09:
+	#depth+=1
+	[value_of_grid, saved_move]=max(grid, depth, alpha, beta, saved_move)
+	print("Saved move return ", saved_move)
+	time_calc=timeit.default_timer()
+	
+	print("Searched Depth ", depth, "alpha ", alpha, "beta ", beta)
 
-            #explore the whole fringe and move the tiles (Players Turn)
-            for el in xrange(0,len(fringe)):
-	      max(fringe[el], depth, alpha, beta)
+        return saved_move
 
-            #explore the whole finge and spawn a new tile (Computers Turn)
-            for el in xrange(0,len(fringe)):
-	      min(fringe[el], depth, alpha, beta)
-
-            index_max=max_list.index(max(max_list))
-            fringe.append(fringe_new[index_max])
-
-            return moves_done[index_max]
-        time_calc=timeit.default_timer()
-
-#            min_list=[]
-#            fringe_new=[]
-#            
-#            #explore the whole finge and spawn a new tile (Computers Turn)
-#            for el in xrange(0,len(fringe)):
-#                grid_old=copy.deepcopy(fringe[el])
-#                cells = grid_old.getAvailableCells()
-#                for cell in cells:
-#                    grid_exp=copy.deepcopy(fringe[el])
-#                    grid_exp.insertTile(cell, 2)
-#                    min_list.append(heur_order(grid_exp))
-#                    fringe_new.append(grid_exp)
-#                fringe.pop(0)
-#
-#            index_max=numpy.argmax(max_list)
-#            fringe.append(fringe_new[index_max])
-        return self.turn
-
-#int max(int tiefe,
-#int alpha, int beta) {
-#if (tiefe == 0 or keineZuegeMehr(spieler_max))
-#return bewerten();
-#int maxWert = alpha;
-#generiereMoeglicheZuege(spieler_max);
-#while (noch Zug da) {
-#fuehreNaechstenZugAus();
-#int wert = min(tiefe-1, 
-#maxWert, beta);
-#macheZugRueckgaengig();
-#if (wert > maxWert) {
-# maxWert = wert;
-#if (maxWert >= beta)
-#break;
-#if (tiefe == anfangstiefe)
-#       gespeicherterZug = Zug;
-#	      }
-#}
-#return maxWert;
-#}
-
-def max(grid, depth, alpha, beta):
+def max(grid, depth, alpha, beta, saved_move):
   if(depth==0):
-    return move
+    return calc_heur(grid)
+  start_depth=depth
+
   maxVal=alpha
 
   moves=grid.getAvailableMoves()
   for move in moves:
-      grid_exp=copy.deepcopy(grid)
-      grid_exp.move(move)
-      beta=heur_order(grid_exp)
-      #max_list.append(heur_order(grid_exp))
-      #moves_done.append(move)
-      #fringe_new.append(grid_exp)
-      val=min(depth-1,maxVal,beta)
+      grid.move(move)
+      #[val, saved_move]=min(grid, depth-1,maxVal,beta, saved_move)
+      val=min(grid, depth-1,maxVal,beta, saved_move)
+      if move%2==0:
+	grid.move(move+1)
+      else:
+	grid.move(move-1)
+      #print("Max", depth, val, maxVal, alpha, beta)
       if(val>maxVal):
 	maxVal=val
 	if(maxVal>beta):
 	  break
 	if(depth==start_depth):
 	  saved_move=move
-  return maxVal
+	  print("Saved move ", saved_move)
+  #return [maxVal, saved_move_max]
+  return [maxVal, saved_move]
 
 
-def min(grid, depth, alpha, beta):
+def min(grid, depth, alpha, beta, saved_move):
   if(depth==0):
-    return move
+    return calc_heur(grid)
+  start_depth=depth
+
   minVal=beta
 
-  moves=grid.getAvailableMoves()
-  for move in moves:
-      grid_exp=copy.deepcopy(grid)
-      grid_exp.move(move)
-      beta=heur_order(grid_exp)
-      #max_list.append(heur_order(grid_exp))
-      #moves_done.append(move)
-      #fringe_new.append(grid_exp)
-      val=min(depth-1,alpha,minVal)
+  cells=grid.getAvailableCells()
+  for cell in cells:
+      #ignore 4 spawns for now
+      grid.setCellValue(cell, 2)
+      #[val, saved_move]=max(grid, depth-1, alpha, minVal, saved_move)
+      val=max(grid, depth-1, alpha, minVal, saved_move)
+      grid.setCellValue(cell, 0)
+      #print("Min", depth, val, minVal, alpha, beta)
       if(val<minVal):
 	minVal=val
 	if(minVal<alpha):
 	  break
-	if(depth==start_depth):
-	  saved_move=move
-  return minVal
+  return [minVal, saved_move]
+
+
+
+#def Depth_First_Search(grid, goal_board):
+#    fringe=[]
+#    explored=[]
+#    fringe.append(grid)
+#    
+#    grid.pos_in_explored=0
+#
+#    max_search_depth=10
+#
+#    while fringe:
+#	time_start=timeit.default_timer()
+#        state=fringe[-1].clone()
+#        fringe.pop(-1)
+#	explored.append(state)
+#	max_search_depth-=1
+#
+##Players turn
+#	moves=state.getAvailableMoves()
+#	for el in xrange(len(moves)-1,-1,-1):
+#	    new_state=copy.clone()
+#	    new_state.move(moves[el])
+#	    fringe.append(new_state)
+#	    new_state.pos_in_explored=len(explored)
+#	    nodes_exp=nodes_exp+1
+#	
+#
+#        state=fringe[-1].clone()
+#        fringe.pop(-1)
+#	explored.append(state)
+#	max_search_depth-=1
+#
+##Computers turn
+#	new_state=copy.deepcopy(state)
+#	cells = new_state.getAvailableCells()
+#	for cell in cells:
+#	    cpu_new_state=copy.clone()
+#	    cpu_new_state.insertTile(cell, 2)
+#	    fringe.append(cpu_new_state)
+#	    cpu_new_state.setCellValue(cell, 4)
+#	    fringe.append(cpu_new_state)
+#	
+#	if max_search_depth<=0:
+#	 
+#
+#	time_end=timeit.default_timer()
+#        #print("time for explore one state: ",time_end-time_start)
+#        #print("max_fringe_size:", max_fringe_size)
+#        #print("explored size:", len(explored))
+#        print("nodes_expanded:", nodes_exp)
+#
+#    return 
